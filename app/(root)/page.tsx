@@ -1,7 +1,6 @@
 import ThreadCard from "@/components/cards/ThreadCard"
 import { fetchThreads } from "@/lib/actions/thread.actions"
 import { currentUser } from "@clerk/nextjs"
-import { Suspense } from "react"
 
 
 export default async function Home() {
@@ -12,16 +11,14 @@ export default async function Home() {
   
   return (
     <div>
-      <h1 className="head-text text-left">Home</h1>
+      <h1 className="text-left head-text">Home</h1>
 
-      <section className="mt-9 flex flex-col gap-10">
+      <section className="flex flex-col gap-10 mt-9">
         {threads.posts.length === 0 ? (
           <p className="no-result">No threads found</p>
         ): (
           <>
             {threads.posts.map(thread => (
-              <Suspense fallback={<p className="text-white">Loading feed...</p>}
-              key={thread._id}>
                 <ThreadCard 
                   key={thread._id}
                   id={thread._id}
@@ -32,8 +29,8 @@ export default async function Home() {
                   community={thread.community}
                   createdAt={thread.createdAt}
                   comments={thread.children}
+                  likes={thread.likedBy}
                 />
-              </Suspense>
             ))}
           </>
         )}

@@ -1,8 +1,10 @@
+import ThreadCard from "@/components/cards/ThreadCard"
 import ProfileHeader from "@/components/shared/ProfileHeader"
 import ThreadsTab from "@/components/shared/ThreadsTab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { profileTabs } from "@/constants"
-import { fetchUser, fetchUserThreads } from "@/lib/actions/user.actions"
+import { fetchReplies } from "@/lib/actions/thread.actions"
+import { fetchUser } from "@/lib/actions/user.actions"
 import { currentUser } from "@clerk/nextjs"
 import Image from "next/image"
 import { redirect } from "next/navigation"
@@ -15,6 +17,9 @@ export default async function Page({ params }: { params: { id: string }}){
     const userInfo = await fetchUser(params.id)
 
     if(!userInfo) redirect('/onboarding')
+
+    const replies = await fetchReplies(userInfo._id)
+    
     return (
         <section>
             <ProfileHeader 
@@ -48,15 +53,57 @@ export default async function Page({ params }: { params: { id: string }}){
                     ))}
                 </TabsList>
                 
-                {profileTabs.map(tab => (
-                    <TabsContent key={`content-${tab.label}`} value={tab.value}>
-                        <ThreadsTab 
-                            currentUserId={user.id}
-                            accountId={userInfo.id}
-                            accountType="User"
-                        />
-                    </TabsContent>
-                ))}
+                {profileTabs.map(tab => {
+                    if(tab.value === "threads"){
+                        return(
+                            <TabsContent key={`content-${tab.label}`} value={tab.value}>
+                                <ThreadsTab 
+                                    currentUserId={user.id}
+                                    accountId={userInfo.id}
+                                    accountType="User"
+                                />
+                            </TabsContent>
+                        )
+                    } else if(tab.value === "replies"){
+                        return(
+                            <TabsContent key={`content-${tab.label}`} value={tab.value} className="flex flex-col gap-10 mt-9">
+                                {replies.map((thread: any) => (
+                                    <ThreadCard 
+                                        key={thread._id}
+                                        id={thread._id}
+                                        currentUserId={user.id}
+                                        parentId={thread.parentId}
+                                        content={thread.text}
+                                        author={thread.author}
+                                        community={thread.community}
+                                        createdAt={thread.createdAt}
+                                        comments={thread.children}
+                                        likes={thread.likedBy}
+                                    />
+                                ))}
+                            </TabsContent>
+                        )
+                    } else{
+                        return(
+                            <TabsContent key={`content-${tab.label}`} value={tab.value} className="flex flex-col gap-10 mt-9">
+                                {userInfo.liked.map((thread: any) => (
+                                    <ThreadCard 
+                                        key={thread._id}
+                                        id={thread._id}
+                                        currentUserId={user.id}
+                                        parentId={thread.parentId}
+                                        content={thread.text}
+                                        author={thread.author}
+                                        community={thread.community}
+                                        createdAt={thread.createdAt}
+                                        comments={thread.children}
+                                        likes={thread.likedBy}
+                                    />
+                                ))}
+                            </TabsContent>
+                        )
+                    }
+                })}
             </Tabs>
 
             </div>

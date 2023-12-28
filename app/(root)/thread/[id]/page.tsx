@@ -15,6 +15,9 @@ export default async function Page({ params }: { params: { id: string }}){
     if(!userInfo.onboarded) redirect('/onboarding')
 
     const thread = await fetchThreadById(params.id)
+
+    console.log(params.id);
+    
     
 
     return(
@@ -30,13 +33,14 @@ export default async function Page({ params }: { params: { id: string }}){
                 community={thread.community}
                 createdAt={thread.createdAt}
                 comments={thread.children}
+                likes={thread.likedBy}
             />
             </div>
 
             <div className="mt-7">
                 <Comment 
                     threadId={params.id}
-                    currentUserId={JSON.stringify(userInfo._id)}
+                    currentUserId={userInfo._id}
                     currentUserImg={userInfo.image}
                 />
             </div>
@@ -53,6 +57,7 @@ export default async function Page({ params }: { params: { id: string }}){
                         community={childItem.community}
                         createdAt={childItem.createdAt}
                         comments={childItem.children}
+                        likes={childItem.likedBy}
                         isComment
                     />
                 ))}

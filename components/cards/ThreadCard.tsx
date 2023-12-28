@@ -1,6 +1,10 @@
+import { formatDateString } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThreadStats from "../shared/ThreadStats";
+import { currentUser } from "@clerk/nextjs";
+import { fetchUser } from "@/lib/actions/user.actions";
 
 
 interface Props{
@@ -25,9 +29,10 @@ interface Props{
         }
     }[]
     isComment?: boolean
+    likes: string[]
 }
 
-const ThreadCard = ({
+async function ThreadCard({
     id,
     currentUserId,
     parentId,
@@ -36,42 +41,53 @@ const ThreadCard = ({
     community,
     createdAt,
     comments,
-    isComment
-}: Props) => {
+    isComment,
+    likes
+}: Props) {
+    const userInfo = await fetchUser(currentUserId)
+
     return (
         <article className={`flex w-full flex-col rounded-xl  ${isComment ? 'px-0 xs:px-7 mb-5' : 'bg-dark-2 p-7'}`}>
-            <div className="flex items-start justify-between">
-                <div className="flex w-full flex-1 flex-row gap-4">
+            <div className="flex flex-col items-start justify-between">
+                <div className="flex flex-row flex-1 w-full gap-4">
                     <div className="flex flex-col items-center">
                         <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
                             <Image  
                                 src={author.image}
                                 alt="Profile Image"
                                 fill
-                                className="cursor-pointer rounded-full"
+                                className="object-cover rounded-full cursor-pointer"
                             />
                         </Link>
                         <div className="thread-card_bar"></div>
+                        <div className="flex">
+                            {comments.map((comment, index) => (
+                                <div className="relative w-5 h-5">
+                                    <Image
+                                        key={index}
+                                        src={comment.author.image}
+                                        alt={`user_${index}`}
+                                        fill
+                                        className={`${
+                                        index !== 0 && "-ml-2"
+                                        } rounded-full object-cover mt-1`}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="fle w-full flex-col">
+                    <div className="flex flex-col w-full">
                         <Link href={`/profile/${author.id}`} className="w-fit">
                             <h4 className="cursor-pointer text-base-semibold text-light-1">{author.name}</h4>
                         </Link>
 
                         <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
-                        <div className="mt-5 flex flex-col gap-3">
-                            <div className="flex gap-3.5">
-                                <Image src="/assets/heart-gray.svg" alt="heart" width={24} height={24} className="cursor-pointer object-contain" />
-                                <Link href={`/thread/${id}`}>
-                                    <Image src="/assets/reply.svg" alt="heart" width={24} height={24} className="cursor-pointer object-contain" />
-                                </Link>
-                                <Image src="/assets/repost.svg" alt="heart" width={24} height={24} className="cursor-pointer object-contain" />
-                                <Image src="/assets/share.svg" alt="heart" width={24} height={24} className="cursor-pointer object-contain" />
-                            </div>
+                        <div className="flex flex-col gap-3 mt-5">
+                            <ThreadStats id={{ id }} likes={{ likes }} userId={{ userInfo: userInfo._id }} />
 
-                            {isComment && comments.length > 0 && (
+                            {comments.length > 0 && (
                                 <Link href={`/thread/${id}`}>
                                     <p className="mt-1 text-subtle-medium text-gray-1">{comments.length} {comments.length > 1 ? 'replies' : 'reply'}</p>
                                 </Link>
@@ -79,6 +95,22 @@ const ThreadCard = ({
                         </div>
                     </div>
                 </div>
+                {!isComment && community && (
+                    <Link href={`/communities/${community.id}`} className="flex items-center mt-5">
+                        <p className="text-subtle-medium text-gray-1">
+                            {formatDateString(createdAt)}
+                            {" "}- {community.name} Community
+                        </p>
+                        <div className="relative w-3 h-3 ml-1">
+                            <Image 
+                                src={community.image}
+                                alt={community.name}
+                                fill
+                                className="object-cover rounded-full"
+                            />
+                        </div>
+                    </Link>
+                )}
             </div>
         </article>
     )

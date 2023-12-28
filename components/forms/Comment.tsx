@@ -14,7 +14,7 @@ import {
     FormMessage,
 } from "../ui/form"
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { commentValidation } from "@/lib/validations/thread";
 import { Input } from "../ui/input";
 import Image from "next/image";
@@ -28,7 +28,6 @@ interface Props{
 
 const Comment = ({threadId, currentUserId, currentUserImg}: Props) => {
     const pathname = usePathname()
-    const router = useRouter()
 
     console.log(pathname);
     
@@ -44,11 +43,11 @@ const Comment = ({threadId, currentUserId, currentUserImg}: Props) => {
 
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof commentValidation>) {
-        await addCommentToThread({ 
-            threadId, 
-            commentText: values.thread, 
-            userId: JSON.parse(currentUserId), 
-            path: pathname 
+        await addCommentToThread({
+            threadId,
+            commentText: values.thread,
+            userId: currentUserId,
+            path: pathname
         })
 
         form.reset()
@@ -61,20 +60,19 @@ const Comment = ({threadId, currentUserId, currentUserImg}: Props) => {
                 control={form.control}
                 name="thread"
                 render={({ field }) => (
-                    <FormItem className="flex items-center gap-1 w-full">
-                        <FormLabel>
+                    <FormItem className="flex items-center w-full gap-1">
+                        <FormLabel className="relative w-12 h-12">
                             <Image 
                                 src={currentUserImg}
                                 alt="User Image"
-                                width={48}
-                                height={48}
-                                className="rounded-full object-cover"
+                                fill
+                                className="object-cover rounded-full"
                             />
                         </FormLabel>
-                        <FormControl className="border-none bg-transparent">
+                        <FormControl className="bg-transparent border-none">
                         <Input
                             placeholder="Comment..."
-                            className="no-focus text-light-1 outline-none"
+                            className="outline-none no-focus text-light-1"
                             {...field}
                             />
                         </FormControl>
