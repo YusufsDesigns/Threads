@@ -82,7 +82,7 @@ async function ThreadCard({
                             <h4 className="cursor-pointer text-base-semibold text-light-1">{author.name}</h4>
                         </Link>
 
-                        <p className="mt-2 text-small-regular text-light-2">{content}</p>
+                        <p className="mt-2 whitespace-pre-wrap text-small-regular text-light-2">{content}</p>
 
                         <div className="flex flex-col gap-3 mt-5">
                             <ThreadStats id={{ id }} likes={{ likes }} userId={{ userInfo: userInfo._id }} />

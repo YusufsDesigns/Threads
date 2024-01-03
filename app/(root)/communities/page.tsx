@@ -22,9 +22,9 @@ export default async function Page(){
     
     return (
         <section>
-            <h1 className="head-text mb-10">Search</h1>
+            <h1 className="mb-10 head-text">Communities</h1>
 
-            <div className="mt-14 flex flex-col gap-9">
+            <div className="flex flex-col mt-14 gap-9">
                 {result.communities.length === 0 ? (
                     <p className="no-result">No Communities</p>
                 ): (

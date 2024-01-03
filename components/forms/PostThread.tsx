@@ -73,11 +73,11 @@ function PostThread({ userId }: { userId: string }) {
                 control={form.control}
                 name="thread"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-start gap-1 w-full">
-                        <FormControl className="no-focus border border-dark-4 bg-dark-3 text-light-1">
+                    <FormItem className="flex flex-col items-start w-full gap-1">
+                        <FormControl className="border no-focus border-dark-4 bg-dark-3 text-light-1">
                         <Textarea 
                                 rows={15}
-                                className="account-form_input no-focus"
+                                className="whitespace-pre-wrap account-form_input no-focus"
                                 {...field}
                             />
                         </FormControl>

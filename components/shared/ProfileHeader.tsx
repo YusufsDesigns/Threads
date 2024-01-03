@@ -12,15 +12,15 @@ interface Props{
 
 const ProfileHeader = ({ accountId, authUserId, name, username, imgUrl, bio }: Props) => {
     return (
-        <div className="flex w-full flex-col justify-start">
+        <div className="flex flex-col justify-start w-full">
             <div className="flex items-center">
                 <div className="flex items-center gap-3">
-                    <div className="relative h-20 w-20 object-cover">
+                    <div className="relative object-cover w-20 h-20">
                         <Image 
                             src={imgUrl}
                             alt="Profile Image"
                             fill
-                            className="rounded-full object-cover shadow-2xl"
+                            className="object-cover rounded-full shadow-2xl"
                         />
                     </div>
 
@@ -31,7 +31,7 @@ const ProfileHeader = ({ accountId, authUserId, name, username, imgUrl, bio }: P
                 </div>
             </div>
 
-            <p className="mt-6 max-w-lg text-base-regular text-light-2">{bio}</p>
+            <p className="max-w-lg mt-6 text-base-regular text-light-2">{bio}</p>
             <div className="mt-12 h-0.5 w-full bg-dark-3" />
         </div>
     )
